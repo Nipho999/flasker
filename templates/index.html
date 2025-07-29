@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>📊 Bot Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/countup.js@2.0.7/dist/countUp.min.js"></script>
+  <style>
+    body {
+      background: #0e0e1f;
+      color: #e0e0e0;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .container {
+      margin-top: 30px;
+    }
+    .card {
+      border-radius: 15px;
+      background: #1c1c3c;
+      color: #fff;
+      box-shadow: 0 0 10px rgba(0,255,255,0.2);
+    }
+    .card h3 {
+      font-weight: bold;
+      color: #0ff;
+    /*  color:red; */
+    }
+    .log-entry {
+      font-size: 0.85rem;
+      padding: 0.4rem;
+      border-bottom: 1px solid #2e2e4e;
+    }
+    .log-table {
+      width: 100%;
+      font-size: 0.85rem;
+    }
+    .log-table td, .log-table th {
+      padding: 0.5rem;
+      color: magenta;
+      border: 1px solid #333;
+    }
+    footer {
+      margin-top: 60px;
+      text-align: center;
+      font-size: 0.85rem;
+      color: #888;
+    }
+    .btn-clear {
+      background: #ff0040;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 0.85rem;
+    }
+    .pacman {
+      animation: move 4s infinite linear;
+      font-size: 1.2rem;
+    }
+    @keyframes move {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(100px); }
+    }
+    @media (max-width: 768px) {
+      h3 { font-size: 1.2rem; }
+      h5 { font-size: 1rem; }
+      .card { margin-bottom: 15px; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h2 class="mb-4 text-center">🛡️ Telegram Bot Dashboard <span class="pacman">👾</span></h2>
+  <div class="row mb-4">
+    <div class="col-md-4">
+      <div class="card p-3 text-center">
+        <h5>Total Users</h5>
+        <h3 id="users">{{ users }}</h3>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card p-3 text-center">
+        <h5>Total Scans</h5>
+        <h3 id="scans">{{ scans }}</h3>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card p-3 text-center">
+        <h5>Previous Targets</h5>
+        <h3>{{ targets|length }}</h3>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-between align-items-center mb-2">
+    <h4>📜 Recent Logs</h4>
+ <!--   <form method="post" action="/clear_logs">
+      <button class="btn-clear" type="submit">🧹 Clear Logs</button>
+    </form>  -->
+
+     <form method="POST" action="{{ url_for('clear_logs') }}" style="margin-top: 1em;" class="log-clear-form">
+    <details style="text-align: left; background-color: #222; padding: 1em; border-radius: 10px;">
+        <summary style="cursor: pointer; font-weight: bold; color: #ff6b6b;">🧹 Clear Logs</summary>
+        <div style="margin-top: 0.5em;">
+            <label for="code" style="color: #fff;">Admin Code:</label><br>
+            <input type="password" name="code" placeholder="Secret code" required style="padding: 6px; border-radius: 6px; border: none; margin-top: 4px;">
+            <button type="submit" style="margin-left: 10px; padding: 6px 12px; background-color: #e63946; color: white; border: none; border-radius: 6px; cursor: pointer;">Clear Logs</button>
+        </div>
+    </details>
+</form>
+
+  </div>
+
+  <div class="accordion" id="logsAccordion">
+    <div class="accordion-item bg-transparent">
+      <h2 class="accordion-header" id="headingOne">
+        <button class="accordion-button collapsed bg-dark text-white" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
+          Show Logs Table
+        </button>
+      </h2>
+      <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#logsAccordion">
+        <div class="accordion-body">
+          {% if logs %}
+            <table class="log-table">
+              <thead>
+                <tr><th>User</th><th>Target</th><th>Domains Found</th></tr>
+              </thead>
+              <tbody>
+                {% for line in logs[-30:] %}
+                  {% set parts = line.strip().split('|') %}
+                  {% if parts|length == 3 %}
+                    <tr>
+                      <td>{{ parts[0][:6] ~ '...' }}</td>
+                      <td>{{ parts[1] }}</td>
+                      <td>{{ parts[2] }}</td>
+                    </tr>
+                  {% endif %}
+                {% endfor %}
+              </tbody>
+            </table>
+          {% else %}
+            <div class="alert alert-warning">No logs yet.</div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    &copy; {{ current_year if current_year else 2025 }} Telegram Bot Scanner • Developed with ❤️
+  </footer>
+</div>
+
+<script>
+  const users = new CountUp('users', {{ users }});
+  const scans = new CountUp('scans', {{ scans }});
+  users.start();
+  scans.start();
+</script>
+
+</body>
+</html>
