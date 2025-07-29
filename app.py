@@ -240,7 +240,7 @@ def clear_logs():
     return redirect(url_for('dashboard'))
 
 def run_flask():
-    app.run("0.0.0.0", 5000)
+    app.run("0.0.0.0", 8080)
 
 def run_bot():
     bot.infinity_polling()
