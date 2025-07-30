@@ -111,6 +111,9 @@ class RapidProxyScanner:
 
 @bot.message_handler(commands=['start'])
 def welcome(msg):
+    if msg.chat.type != "private":
+    return
+    
     if not is_subscriber(msg):
         return
     user_id = msg.from_user.id
@@ -118,6 +121,9 @@ def welcome(msg):
 
 @bot.message_handler(commands=['ban'])
 def ban_user(msg):
+    if msg.chat.type != "private":
+    return
+    
     if msg.from_user.id in ADMIN_IDS:
         try:
             uid = int(msg.text.split()[1])
@@ -128,6 +134,9 @@ def ban_user(msg):
 
 @bot.message_handler(commands=['unban'])
 def unban_user(msg):
+    if msg.chat.type != "private":
+    return
+    
     if msg.from_user.id in ADMIN_IDS:
         try:
             uid = int(msg.text.split()[1])
@@ -138,6 +147,9 @@ def unban_user(msg):
 
 @bot.message_handler(commands=['stats'])
 def stats(msg):
+    if msg.chat.type != "private":
+    return
+                         
     if msg.from_user.id not in ADMIN_IDS:
         return
     total_users = len(USER_STATS)
@@ -146,6 +158,9 @@ def stats(msg):
 
 @bot.message_handler(commands=['users'])
 def user_list(msg):
+    if msg.chat.type != "private":
+    return
+    
     if msg.from_user.id not in ADMIN_IDS:
         return
     if not USER_STATS:
